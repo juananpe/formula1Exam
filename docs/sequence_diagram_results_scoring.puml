@@ -1,0 +1,76 @@
+@startuml
+title Formula 1 Results Scoring Sequence Diagram
+
+actor User
+participant "ResultsController" as RC
+participant "BlInterface" as BL
+participant "DbAccessManager" as DB
+participant "EntityManager" as EM
+participant "Pilot" as P
+participant "Race" as R
+participant "RaceResult" as RR
+
+== Initialization ==
+RC -> BL: getAllRaces()
+BL -> DB: getAllRaces()
+DB -> EM: createQuery(q1)
+note right of EM
+  q1 = "SELECT r FROM Race r"
+end note
+EM --> DB: List<Race>
+DB --> BL: List<Race>
+RC -> RC: Initialize UI components and\npopulate race comboBox
+
+== Race Selection ==
+User -> RC: Select race from comboBox
+User -> RC: Click loadDriversButton
+RC -> BL: getRaceResults(selectedRace)
+BL -> DB: getRaceResults(selectedRace)
+DB -> EM: createQuery(q2)
+note right of EM
+  q2 = "SELECT rr FROM RaceResult rr 
+   WHERE rr.race = :race"
+end note
+EM --> DB: List<RaceResult>
+DB --> BL: List<RaceResult>
+
+alt Existing results found
+    RC -> RC: Load drivers and existing positions/points
+    RC -> RC: Update table with existing results
+else No existing results
+    RC -> R: getDrivers()
+    R --> RC: List<Pilot>
+    RC -> RC: Initialize positions/points to default values
+    RC -> RC: Update table with participating drivers
+end
+
+== Position and Points Assignment ==
+User -> RC: Edit position cell in table
+RC -> RC: Update positionsMap
+User -> RC: Edit points cell in table
+RC -> RC: Update pointsMap
+
+== Save Race Results ==
+User -> RC: Click saveResultsButton
+RC -> RC: Validate positions and points
+alt Validation fails
+    RC -> RC: Create alert dialog with error message
+    RC --> User: Display validation error alert
+else Validation passes
+    loop for each driver
+        RC -> BL: saveRaceResult(selectedRace, driver, position, points)
+        BL -> RR: new RaceResult(race, driver, position, points)
+        BL -> DB: saveRaceResult(result)
+        DB -> EM: getTransaction().begin()
+        DB -> EM: persist(result)
+        DB -> P: addPoints(additionalPoints)
+        DB -> EM: merge(driver)
+        DB -> EM: getTransaction().commit()
+    end
+    BL --> RC: success
+    RC -> RC: Create success alert dialog
+    RC --> User: Display success alert
+end
+
+hide footbox
+@enduml

@@ -8,59 +8,35 @@ skinparam class {
 }
 
 ' Domain entities
-class Pilot {
+class Driver {
   -id: Long
   -name: String
   -nationality: String 
   -points: int
-  +addPoints(morePoints: int): void
-  +addRace(race: Race): void
-  +getName(): String
-  +getNationality(): String
-  +getPoints(): int
-  +getRaces(): Set<Race>
-  +getTeam(): Team
-  +setTeam(team: Team): void
 }
 
 class Team {
   -name: String
   -country: String
-  +addPilot(pilot: Pilot): void
 }
 
 class Race {
   -id: Long
   -name: String
-  -raceDate: LocalDate
-  +addDriver(pilot: Pilot): void
-  +getDrivers(): Set<Pilot>
-  +getId(): Long
-  +getName(): String
+  -raceDate: Date
 }
 
 class RaceResult {
   -id: Long
   -position: int
   -points: int
-  +getDriver(): Pilot
-  +getPosition(): int
-  +getPoints(): int
-  +getRace(): Race
-  +setDriver(driver: Pilot): void
-  +setPosition(position: int): void
-  +setPoints(points: int): void
-  +setRace(race: Race): void
 }
 
 ' Relationships
-Pilot "*" -- "1" Team : belongs to >
-Pilot "*" -- "*" Race : participates in >
+Driver "*" -- "1" Team : belongs to >
+Driver "*" -- "*" Race : participates in >
 RaceResult "*" -- "1" Race : references >
-RaceResult "*" -- "1" Pilot : references >
-
-note "Many-to-many relationship\nwith join table" as N1
-(Pilot, Race) .. N1
+RaceResult "*" -- "1" Driver : references >
 
 note "RaceResult provides the driver's\nposition and points for a specific race" as N2
 RaceResult .. N2
