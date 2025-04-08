@@ -39,6 +39,11 @@ public class MainLayoutController {
         loadContent("races.fxml");
     }
 
+    @FXML
+    void onResultsButtonClick(ActionEvent event) {
+        loadContent("results.fxml");
+    }
+
     private void loadContent(String fxmlFile) {
         try {
             // Check if content is already cached

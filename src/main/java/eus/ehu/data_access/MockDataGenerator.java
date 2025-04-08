@@ -2,6 +2,7 @@ package eus.ehu.data_access;
 
 import eus.ehu.domain.Pilot;
 import eus.ehu.domain.Race;
+import eus.ehu.domain.RaceResult;
 import eus.ehu.domain.Team;
 
 import java.time.LocalDate;
@@ -84,6 +85,21 @@ public class MockDataGenerator {
         System.out.println("Monaco GP Drivers: " + monacaGP.getDrivers());
         System.out.println("Silverstone GP Drivers: " + silverstone.getDrivers());
 
+        // Create some sample race results for Monza GP
+        System.out.println("\nCreating sample race results for Monza GP...");
+        // Create result for Hamilton (1st place, 25 points)
+        RaceResult hamiltonMonza = new RaceResult(monzaGP, hamilton, 1, 25);
+        dataManager.saveRaceResult(hamiltonMonza);
+        
+        // Create result for Verstappen (2nd place, 18 points)
+        RaceResult verstappenMonza = new RaceResult(monzaGP, verstappen, 2, 18);
+        dataManager.saveRaceResult(verstappenMonza);
+        
+        // Create result for Leclerc (3rd place, 15 points)
+        RaceResult leclercMonza = new RaceResult(monzaGP, leclerc, 3, 15);
+        dataManager.saveRaceResult(leclercMonza);
+        
+        System.out.println("Sample race results created successfully!");
 
 
         dataManager.close();

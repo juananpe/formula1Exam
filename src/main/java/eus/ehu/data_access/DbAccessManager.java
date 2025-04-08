@@ -1,6 +1,7 @@
 package eus.ehu.data_access;
 
 import eus.ehu.domain.Pilot;
+import eus.ehu.domain.RaceResult;
 import eus.ehu.domain.Team;
 import eus.ehu.domain.Race;
 import jakarta.persistence.EntityManager;
@@ -169,10 +170,65 @@ public class DbAccessManager {
         db.getTransaction().commit();
         System.out.println("Race " + race.getName() + " has been saved");
     }
+    
+    /**
+     * Get all races from the database
+     * @return list of all races
+     */
+    public List<Race> getAllRaces() {
+        TypedQuery<Race> query = db.createQuery("SELECT r FROM Race r", Race.class);
+        return query.getResultList();
+    }
+    
+    /**
+     * Get a race by its ID
+     * @param id the race ID
+     * @return the race
+     */
+    public Race getRaceById(Long id) {
+        return db.find(Race.class, id);
+    }
+    
+    /**
+     * Save a race result
+     * @param result the race result to save
+     */
+    public void saveRaceResult(RaceResult result) {
+        db.getTransaction().begin();
+        db.persist(result);
+        db.getTransaction().commit();
+        
+        // Update driver's points
+        updateDriverPoints(result.getDriver(), result.getPoints());
+    }
+    
+    /**
+     * Update a driver's points by adding more points
+     * @param driver the driver to update
+     * @param additionalPoints points to add
+     */
+    public void updateDriverPoints(Pilot driver, int additionalPoints) {
+        db.getTransaction().begin();
+        driver.addPoints(additionalPoints);
+        db.merge(driver);
+        db.getTransaction().commit();
+        System.out.println("Updated " + driver.getName() + "'s points by adding " + additionalPoints);
+    }
+    
+    /**
+     * Get existing race results for a race
+     * @param race the race
+     * @return list of race results
+     */
+    public List<RaceResult> getRaceResults(Race race) {
+        TypedQuery<RaceResult> query = db.createQuery(
+                "SELECT rr FROM RaceResult rr WHERE rr.race = :race", RaceResult.class);
+        query.setParameter("race", race);
+        return query.getResultList();
+    }
 
     public void close() {
         db.close();
         System.out.println("DataBase is closed");
     }
-
 }

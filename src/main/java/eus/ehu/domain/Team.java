@@ -32,9 +32,7 @@ public class Team {
 
     @Override
     public String toString() {
-        return "Team{" +
-                "name='" + name + '\'' +
-                ", country='" + country + '\'' +
-                '}';
+        // return name - country
+        return name + " - " + country;
     }
 }

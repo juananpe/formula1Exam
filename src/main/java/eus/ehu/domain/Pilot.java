@@ -62,6 +62,14 @@ public class Pilot {
     }
 
     /**
+     * Get the team of this pilot
+     * @return the team
+     */
+    public Team getTeam() {
+        return team;
+    }
+
+    /**
      * Add a race to this pilot's races
      * @param race the race to add
      */

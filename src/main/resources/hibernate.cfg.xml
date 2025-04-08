@@ -7,12 +7,13 @@
         <property name="hibernate.connection.driver_class">org.h2.Driver</property>
         <property name="hibernate.connection.url">jdbc:h2:tcp://localhost:9092/~/formula1</property>
         <property name="hibernate.show_sql">true</property>
-        <property name="hibernate.hbm2ddl.auto">create</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
 
 
         <property name="hibernate.physical_naming_strategy">org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl</property>
         <mapping class="eus.ehu.domain.Pilot" />
         <mapping class="eus.ehu.domain.Team" />
         <mapping class="eus.ehu.domain.Race" />
+        <mapping class="eus.ehu.domain.RaceResult" />
     </session-factory>
 </hibernate-configuration>
