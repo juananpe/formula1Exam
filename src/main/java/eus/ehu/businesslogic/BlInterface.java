@@ -19,5 +19,6 @@ public interface BlInterface {
     
     // Race results methods
     void saveRaceResult(Race race, Pilot driver, int position, int points);
+    void updateRaceResult(RaceResult result, int position, int points);
     List<RaceResult> getRaceResults(Race race);
 }

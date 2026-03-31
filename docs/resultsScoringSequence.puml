@@ -1,8 +1,7 @@
 @startuml
 title Formula 1 Results Scoring Sequence Diagram
-
 actor User
-participant "ResultsController" as RC
+participant "UI Results" as RC
 participant "BlInterface" as BL
 participant "DbAccessManager" as DB
 participant "EntityManager" as EM
@@ -35,7 +34,7 @@ EM --> DB: List<RaceResult>
 DB --> BL: List<RaceResult>
 
 alt Existing results found
-    RC -> RC: Load drivers and existing positions/points
+    RC -> RC: Load drivers, positions/points
     RC -> RC: Update table with existing results
 else No existing results
     RC -> R: getDrivers()
@@ -45,32 +44,40 @@ else No existing results
 end
 
 == Position and Points Assignment ==
-User -> RC: Edit position cell in table
-RC -> RC: Update positionsMap
-User -> RC: Edit points cell in table
-RC -> RC: Update pointsMap
+loop for each driver to edit
+    User -> RC: Edit position cell in table
+    RC -> RC: Update positionsMap
+    User -> RC: Edit points cell in table
+    RC -> RC: Update pointsMap
+end
 
 == Save Race Results ==
 User -> RC: Click saveResultsButton
 RC -> RC: Validate positions and points
 alt Validation fails
     RC -> RC: Create alert dialog with error message
-    RC --> User: Display validation error alert
 else Validation passes
     loop for each driver
-        RC -> BL: saveRaceResult(selectedRace, driver, position, points)
-        BL -> RR: new RaceResult(race, driver, position, points)
-        BL -> DB: saveRaceResult(result)
-        DB -> EM: getTransaction().begin()
-        DB -> EM: persist(result)
-        DB -> P: addPoints(additionalPoints)
-        DB -> EM: merge(driver)
-        DB -> EM: getTransaction().commit()
+        alt driver in existing race results
+            RC -> BL: updateRaceResult(existingResult, position, points)
+            BL -> DB: updateRaceResult(result, position, points)
+            DB -> EM: getTransaction().begin()
+            DB -> RR: setPosition(position)
+            DB -> RR: setPoints(points)
+            DB -> P: addPoints(pointsDiff)
+            DB -> EM: getTransaction().commit()
+        else new driver result
+            RC -> BL: saveRaceResult(selectedRace, driver, position, points)
+            BL -> RR: new RaceResult(race, driver, position, points)
+            BL -> DB: saveRaceResult(result)
+            DB -> EM: getTransaction().begin()
+            DB -> EM: persist(result)
+            DB -> P: addPoints(points)
+            DB -> EM: getTransaction().commit()
+        end
     end
     BL --> RC: success
     RC -> RC: Create success alert dialog
-    RC --> User: Display success alert
 end
 
-hide footbox
 @enduml

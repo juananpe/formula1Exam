@@ -51,7 +51,12 @@ public class BusinessLogic implements BlInterface {
         RaceResult result = new RaceResult(race, driver, position, points);
         db.saveRaceResult(result);
     }
-    
+
+    @Override
+    public void updateRaceResult(RaceResult result, int position, int points) {
+        db.updateRaceResult(result, position, points);
+    }
+
     @Override
     public List<RaceResult> getRaceResults(Race race) {
         return db.getRaceResults(race);

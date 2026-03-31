@@ -52,6 +52,7 @@ public class ResultsController {
     private ObservableList<Pilot> drivers = FXCollections.observableArrayList();
     private Map<Pilot, Integer> positionsMap = new HashMap<>();
     private Map<Pilot, Integer> pointsMap = new HashMap<>();
+    private Map<Pilot, RaceResult> existingResultsMap = new HashMap<>();
 
     @FXML
     public void initialize() {
@@ -130,6 +131,7 @@ public class ResultsController {
         drivers.clear();
         positionsMap.clear();
         pointsMap.clear();
+        existingResultsMap.clear();
         
         // Check if we already have results for this race
         List<RaceResult> existingResults = bl.getRaceResults(selectedRace);
@@ -141,6 +143,7 @@ public class ResultsController {
                 drivers.add(driver);
                 positionsMap.put(driver, result.getPosition());
                 pointsMap.put(driver, result.getPoints());
+                existingResultsMap.put(driver, result);
             }
             showAlert("Information", "Loaded existing results for this race. You can edit and save changes.");
         } else {
@@ -210,8 +213,12 @@ public class ResultsController {
         for (Pilot driver : drivers) {
             int position = positionsMap.get(driver);
             int points = pointsMap.get(driver);
-            
-            bl.saveRaceResult(selectedRace, driver, position, points);
+
+            if (existingResultsMap.containsKey(driver)) {
+                bl.updateRaceResult(existingResultsMap.get(driver), position, points);
+            } else {
+                bl.saveRaceResult(selectedRace, driver, position, points);
+            }
         }
         
         showAlert("Success", "Race results saved successfully!");

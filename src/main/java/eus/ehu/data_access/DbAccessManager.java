@@ -190,16 +190,29 @@ public class DbAccessManager {
     }
     
     /**
-     * Save a race result
+     * Save a new race result
      * @param result the race result to save
      */
     public void saveRaceResult(RaceResult result) {
         db.getTransaction().begin();
         db.persist(result);
+        result.getDriver().addPoints(result.getPoints());
         db.getTransaction().commit();
-        
-        // Update driver's points
-        updateDriverPoints(result.getDriver(), result.getPoints());
+    }
+
+    /**
+     * Update an existing race result, adjusting the driver's points by the difference.
+     * @param result   the already-persisted RaceResult to update
+     * @param position new position
+     * @param points   new points
+     */
+    public void updateRaceResult(RaceResult result, int position, int points) {
+        int pointsDiff = points - result.getPoints();
+        db.getTransaction().begin();
+        result.setPosition(position);
+        result.setPoints(points);
+        result.getDriver().addPoints(pointsDiff);
+        db.getTransaction().commit();
     }
     
     /**
