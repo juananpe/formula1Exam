@@ -67,4 +67,9 @@ public class BusinessLogic implements BlInterface {
     public List<RaceResult> getRaceResults(Race race) {
         return db.getRaceResults(race);
     }
+    
+    @Override
+    public void resetData() {
+        db.clearAllData();
+    }
 }

@@ -8,9 +8,13 @@ import eus.ehu.domain.Team;
 import java.time.LocalDate;
 
 public class MockDataGenerator {
-    public static void main(String[] args) {
-        DbAccessManager dataManager = new DbAccessManager();
-
+    
+    /**
+     * Generates mock data for the Formula 1 database.
+     * This can be called to reset/populate the database with sample data.
+     * @param dataManager the database access manager to use
+     */
+    public static void generateMockData(DbAccessManager dataManager) {
         dataManager.storePilot("Lewis Hamilton", "British", 380);
         // Include here additional instructions for another 6 pilots. You can
         // get info at https://www.formula1.com/en/drivers.html
@@ -100,8 +104,11 @@ public class MockDataGenerator {
         dataManager.saveRaceResult(leclercMonza);
         
         System.out.println("Sample race results created successfully!");
-
-
+    }
+    
+    public static void main(String[] args) {
+        DbAccessManager dataManager = new DbAccessManager();
+        generateMockData(dataManager);
         dataManager.close();
     }
 }

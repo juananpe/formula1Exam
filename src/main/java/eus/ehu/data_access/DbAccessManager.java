@@ -256,4 +256,38 @@ public class DbAccessManager {
         db.close();
         System.out.println("DataBase is closed");
     }
+    
+    /**
+     * Clears all data from the database by deleting all records from all tables.
+     * Tables are cleared in order to respect foreign key constraints.
+     */
+    public void clearAllData() {
+        db.getTransaction().begin();
+        
+        // Clear in order respecting foreign key constraints
+        // RaceResult -> Race_Pilot (join table) -> Race -> Pilot -> Team
+        
+        // 1. Delete all race results
+        db.createQuery("DELETE FROM RaceResult").executeUpdate();
+        System.out.println("All race results deleted");
+        
+        // 2. Clear the join table between Race and Pilot
+        db.createNativeQuery("DELETE FROM RACE_PILOT").executeUpdate();
+        System.out.println("All race-pilot associations cleared");
+        
+        // 3. Delete all races
+        db.createQuery("DELETE FROM Race").executeUpdate();
+        System.out.println("All races deleted");
+        
+        // 4. Delete all pilots
+        db.createQuery("DELETE FROM Pilot").executeUpdate();
+        System.out.println("All pilots deleted");
+        
+        // 5. Delete all teams
+        db.createQuery("DELETE FROM Team").executeUpdate();
+        System.out.println("All teams deleted");
+        
+        db.getTransaction().commit();
+        System.out.println("Database cleared successfully!");
+    }
 }
