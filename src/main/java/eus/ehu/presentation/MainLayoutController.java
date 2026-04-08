@@ -1,17 +1,23 @@
 package eus.ehu.presentation;
 
+import eus.ehu.businesslogic.BlInterface;
+import eus.ehu.businesslogic.BusinessLogic;
+import eus.ehu.data_access.DbAccessManager;
+import eus.ehu.data_access.MockDataGenerator;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.LoadException;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class MainLayoutController {
 
@@ -23,6 +29,8 @@ public class MainLayoutController {
 
     // Cache for loaded FXML content
     private final Map<String, AnchorPane> contentCache = new HashMap<>();
+    
+    private BlInterface bl = new BusinessLogic();
 
     @FXML
     void onDriversButtonClick(ActionEvent event) {
@@ -42,6 +50,39 @@ public class MainLayoutController {
     @FXML
     void onResultsButtonClick(ActionEvent event) {
         loadContent("results.fxml");
+    }
+
+    @FXML
+    void onResetButtonClick(ActionEvent event) {
+        // Show confirmation dialog
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Reset Database");
+        confirmAlert.setHeaderText("Reset all data?");
+        confirmAlert.setContentText("This will delete ALL data and regenerate it with sample values. This action cannot be undone.");
+        
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // Reset the database
+            bl.resetData();
+            
+            // Regenerate mock data
+            DbAccessManager dataManager = new DbAccessManager();
+            MockDataGenerator.generateMockData(dataManager);
+            dataManager.close();
+            
+            // Clear the content cache so views will reload fresh data
+            contentCache.clear();
+            
+            // Show success message
+            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+            successAlert.setTitle("Success");
+            successAlert.setHeaderText("Database Reset");
+            successAlert.setContentText("All data has been reset and regenerated successfully!");
+            successAlert.showAndWait();
+            
+            // Reload current view to show fresh data
+            loadContent("drivers.fxml");
+        }
     }
 
     private void loadContent(String fxmlFile) {
