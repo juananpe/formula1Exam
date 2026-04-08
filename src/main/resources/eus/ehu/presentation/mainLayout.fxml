@@ -29,6 +29,11 @@
                   <Insets left="10.0" right="10.0" top="10.0" />
                </VBox.margin>
             </Button>
+            <Button fx:id="resetButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#onResetButtonClick" text="Reset Data" style="-fx-background-color: #ff6b6b; -fx-text-fill: white;">
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" top="30.0" />
+               </VBox.margin>
+            </Button>
          </children>
          <BorderPane.margin>
             <Insets />

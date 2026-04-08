@@ -37,12 +37,17 @@ public class DriversController {
     void onDelete(ActionEvent event) {
         // print the selected pilot
         Pilot selectedPilot = tableDrivers.getSelectionModel().getSelectedItem();
+        if (selectedPilot == null) {
+            return;
+        }
         System.out.println(selectedPilot);
         // delete the selected pilot from the database
         bl.deletePilot(selectedPilot);
         // delete the selected pilot from the list
         drivers.remove(selectedPilot);
-
+        // clear selection and refresh table
+        tableDrivers.getSelectionModel().clearSelection();
+        tableDrivers.refresh();
     }
 
     @FXML
