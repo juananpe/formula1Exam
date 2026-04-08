@@ -81,7 +81,7 @@ public class ResultsController {
         
         driverTeamColumn.setCellValueFactory(data -> 
                 new SimpleStringProperty(data.getValue().getTeam() != null ? 
-                        data.getValue().getTeam().toString() : "No Team"));
+                        data.getValue().getTeam().getName() : "No Team"));
         
         // Position column with editable cells
         positionColumn.setCellValueFactory(data -> {
