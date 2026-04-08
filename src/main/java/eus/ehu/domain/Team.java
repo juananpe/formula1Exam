@@ -25,6 +25,14 @@ public class Team {
 
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
     public void addPilot(Pilot pilot) {
         pilots.add(pilot);
         pilot.setTeam(this);

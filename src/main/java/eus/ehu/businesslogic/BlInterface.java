@@ -3,6 +3,7 @@ package eus.ehu.businesslogic;
 import eus.ehu.domain.Pilot;
 import eus.ehu.domain.Race;
 import eus.ehu.domain.RaceResult;
+import eus.ehu.domain.Team;
 
 import java.util.List;
 
@@ -12,6 +13,9 @@ public interface BlInterface {
     void storePilot(String name, String nat, int pts);
     void deletePilotByName(String name);
     void deletePilot(Pilot selectedPilot);
+    
+    // Team-related methods
+    List<Team> getAllTeams();
     
     // Race-related methods
     List<Race> getAllRaces();

@@ -233,6 +233,15 @@ public class DbAccessManager {
      * @param race the race
      * @return list of race results
      */
+    /**
+     * Get all teams from the database
+     * @return list of all teams
+     */
+    public List<Team> getAllTeams() {
+        TypedQuery<Team> query = db.createQuery("SELECT t FROM Team t", Team.class);
+        return query.getResultList();
+    }
+
     public List<RaceResult> getRaceResults(Race race) {
         TypedQuery<RaceResult> query = db.createQuery(
                 "SELECT rr FROM RaceResult rr WHERE rr.race = :race", RaceResult.class);

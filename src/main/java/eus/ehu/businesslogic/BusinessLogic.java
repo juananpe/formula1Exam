@@ -4,6 +4,7 @@ import eus.ehu.data_access.DbAccessManager;
 import eus.ehu.domain.Pilot;
 import eus.ehu.domain.Race;
 import eus.ehu.domain.RaceResult;
+import eus.ehu.domain.Team;
 
 import java.util.List;
 
@@ -34,6 +35,11 @@ public class BusinessLogic implements BlInterface {
     @Override
     public void deletePilot(Pilot p) {
         db.deletePilot(p);
+    }
+    
+    @Override
+    public List<Team> getAllTeams() {
+        return db.getAllTeams();
     }
     
     @Override

@@ -66,4 +66,12 @@ public class Race {
    public String getName() {
       return name;
    }
+   
+   /**
+    * Get the date of this race
+    * @return the race date
+    */
+   public java.time.LocalDate getRaceDate() {
+      return raceDate;
+   }
 }
