@@ -2,12 +2,14 @@ package eus.ehu.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Pilot {
@@ -23,6 +25,9 @@ public class Pilot {
 
     @ManyToMany
     private Set<Race> races = new HashSet<>();
+    
+    @OneToMany(mappedBy = "driver", cascade = CascadeType.REMOVE)
+    private Set<RaceResult> raceResults = new HashSet<>();
 
     public Pilot(String name, String nat, int pts) {
         this.name = name;
@@ -75,6 +80,23 @@ public class Pilot {
      */
     public void addRace(Race race) {
         races.add(race);
+    }
+    
+    /**
+     * Get all race results for this pilot
+     * @return set of race results
+     */
+    public Set<RaceResult> getRaceResults() {
+        return raceResults;
+    }
+    
+    /**
+     * Add a race result to this pilot
+     * @param result the race result to add
+     */
+    public void addRaceResult(RaceResult result) {
+        raceResults.add(result);
+        result.setDriver(this);
     }
 
     /**

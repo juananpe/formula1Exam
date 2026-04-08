@@ -77,7 +77,8 @@ public class DbAccessManager {
     }
 
     /**
-     * Deletes a pilot from the database
+     * Deletes a pilot from the database.
+     * Cascade REMOVE on raceResults will automatically delete associated RaceResult records.
      * @param p the pilot to delete
      */
     public void deletePilot(Pilot p) {
@@ -197,6 +198,8 @@ public class DbAccessManager {
         db.getTransaction().begin();
         db.persist(result);
         result.getDriver().addPoints(result.getPoints());
+        // Add to pilot's raceResults collection for cascade management
+        result.getDriver().addRaceResult(result);
         db.getTransaction().commit();
     }
 
