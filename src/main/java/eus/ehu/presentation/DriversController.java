@@ -45,9 +45,7 @@ public class DriversController {
         bl.deletePilot(selectedPilot);
         // delete the selected pilot from the list
         drivers.remove(selectedPilot);
-        // clear selection and refresh table
-        tableDrivers.getSelectionModel().clearSelection();
-        tableDrivers.refresh();
+    
     }
 
     @FXML
