@@ -31,7 +31,6 @@
                      </font>
                   </Label>
                   <ComboBox fx:id="raceComboBox" prefWidth="200.0" promptText="Select a race" />
-                  <Button fx:id="loadDriversButton" mnemonicParsing="false" onAction="#onLoadDrivers" text="Load Drivers" />
                </children>
                <VBox.margin>
                   <Insets bottom="15.0" />

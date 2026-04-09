@@ -43,9 +43,6 @@ public class ResultsController implements Refreshable {
     private TableColumn<Pilot, Integer> pointsColumn;
 
     @FXML
-    private Button loadDriversButton;
-
-    @FXML
     private Button saveResultsButton;
 
     private BlInterface bl = new BusinessLogic();
@@ -114,24 +111,34 @@ public class ResultsController implements Refreshable {
 
         // Set table items
         driversTable.setItems(drivers);
+        
+        // Add listener to auto-load drivers when race is selected
+        raceComboBox.getSelectionModel().selectedItemProperty().addListener((obs, oldRace, newRace) -> {
+            if (newRace != null) {
+                loadRaceData(newRace);
+            } else {
+                // Clear table when no race selected
+                drivers.clear();
+                positionsMap.clear();
+                pointsMap.clear();
+                existingResultsMap.clear();
+                saveResultsButton.setDisable(true);
+            }
+        });
     }
 
     @Override
     public void refresh() {
-        if (raceComboBox.getValue() != null) {
-            onLoadDrivers(null);
+        Race currentRace = raceComboBox.getValue();
+        if (currentRace != null) {
+            loadRaceData(currentRace);
         }
     }
-
-    @FXML
-    void onLoadDrivers(ActionEvent event) {
-        Race selectedRace = raceComboBox.getValue();
-
-        if (selectedRace == null) {
-            showAlert("Error", "Please select a race first.");
-            return;
-        }
-
+    
+    /**
+     * Loads race data (drivers and results) for the given race
+     */
+    private void loadRaceData(Race selectedRace) {
         // Clear previous data
         drivers.clear();
         positionsMap.clear();
@@ -150,7 +157,6 @@ public class ResultsController implements Refreshable {
                 pointsMap.put(driver, result.getPoints());
                 existingResultsMap.put(driver, result);
             }
-            showAlert("Information", "Loaded existing results for this race. You can edit and save changes.");
         } else {
             // Load all drivers participating in this race
             drivers.addAll(selectedRace.getDrivers());
