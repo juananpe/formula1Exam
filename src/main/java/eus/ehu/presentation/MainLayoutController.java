@@ -30,7 +30,7 @@ public class MainLayoutController {
     // Cache for loaded FXML content
     private final Map<String, AnchorPane> contentCache = new HashMap<>();
     private final Map<String, Object> controllerCache = new HashMap<>();
-    
+
     private BlInterface bl = new BusinessLogic();
 
     @FXML
@@ -59,29 +59,30 @@ public class MainLayoutController {
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
         confirmAlert.setTitle("Reset Database");
         confirmAlert.setHeaderText("Reset all data?");
-        confirmAlert.setContentText("This will delete ALL data and regenerate it with sample values. This action cannot be undone.");
-        
+        confirmAlert.setContentText(
+                "This will delete ALL data and regenerate it with sample values. This action cannot be undone.");
+
         Optional<ButtonType> result = confirmAlert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             // Reset the database
             bl.resetData();
-            
+
             // Regenerate mock data
             DbAccessManager dataManager = new DbAccessManager();
             MockDataGenerator.generateMockData(dataManager);
             dataManager.close();
-            
+
             // Clear the content cache so views will reload fresh data
             contentCache.clear();
             controllerCache.clear();
-            
+
             // Show success message
             Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
             successAlert.setTitle("Success");
             successAlert.setHeaderText("Database Reset");
             successAlert.setContentText("All data has been reset and regenerated successfully!");
             successAlert.showAndWait();
-            
+
             // Reload current view to show fresh data
             loadContent("drivers.fxml");
         }
@@ -126,4 +127,4 @@ public class MainLayoutController {
         // Load drivers view by default
         loadContent("drivers.fxml");
     }
-} 
+}

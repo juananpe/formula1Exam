@@ -59,7 +59,7 @@ public class ResultsController implements Refreshable {
         // Setup the race combo box
         ObservableList<Race> races = FXCollections.observableArrayList(bl.getAllRaces());
         raceComboBox.setItems(races);
-        
+
         // Setup driver display name in ComboBox
         raceComboBox.setConverter(new StringConverter<>() {
             @Override
@@ -76,44 +76,42 @@ public class ResultsController implements Refreshable {
         });
 
         // Setup table columns
-        driverNameColumn.setCellValueFactory(data -> 
-                new SimpleStringProperty(data.getValue().getName()));
-        
-        driverTeamColumn.setCellValueFactory(data -> 
-                new SimpleStringProperty(data.getValue().getTeam() != null ? 
-                        data.getValue().getTeam().getName() : "No Team"));
-        
+        driverNameColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getName()));
+
+        driverTeamColumn.setCellValueFactory(data -> new SimpleStringProperty(
+                data.getValue().getTeam() != null ? data.getValue().getTeam().getName() : "No Team"));
+
         // Position column with editable cells
         positionColumn.setCellValueFactory(data -> {
             // Default position is 0 if not set
             Integer position = positionsMap.getOrDefault(data.getValue(), 0);
             return new SimpleObjectProperty<>(position);
         });
-        
+
         positionColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         positionColumn.setOnEditCommit(event -> {
             Pilot driver = event.getRowValue();
             positionsMap.put(driver, event.getNewValue());
             updateSaveButtonState();
         });
-        
+
         // Points column with editable cells
         pointsColumn.setCellValueFactory(data -> {
             // Default points is 0 if not set
             Integer points = pointsMap.getOrDefault(data.getValue(), 0);
             return new SimpleObjectProperty<>(points);
         });
-        
+
         pointsColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         pointsColumn.setOnEditCommit(event -> {
             Pilot driver = event.getRowValue();
             pointsMap.put(driver, event.getNewValue());
             updateSaveButtonState();
         });
-        
+
         // Enable table editing
         driversTable.setEditable(true);
-        
+
         // Set table items
         driversTable.setItems(drivers);
     }
@@ -128,21 +126,21 @@ public class ResultsController implements Refreshable {
     @FXML
     void onLoadDrivers(ActionEvent event) {
         Race selectedRace = raceComboBox.getValue();
-        
+
         if (selectedRace == null) {
             showAlert("Error", "Please select a race first.");
             return;
         }
-        
+
         // Clear previous data
         drivers.clear();
         positionsMap.clear();
         pointsMap.clear();
         existingResultsMap.clear();
-        
+
         // Check if we already have results for this race
         List<RaceResult> existingResults = bl.getRaceResults(selectedRace);
-        
+
         if (!existingResults.isEmpty()) {
             // Load existing results
             for (RaceResult result : existingResults) {
@@ -156,17 +154,17 @@ public class ResultsController implements Refreshable {
         } else {
             // Load all drivers participating in this race
             drivers.addAll(selectedRace.getDrivers());
-            
+
             // Initialize with default values
             for (Pilot driver : drivers) {
                 positionsMap.put(driver, 0);
                 pointsMap.put(driver, 0);
             }
         }
-        
+
         // Enable save button if we have drivers
         saveResultsButton.setDisable(drivers.isEmpty());
-        
+
         // Refresh the table
         driversTable.refresh();
     }
@@ -174,35 +172,35 @@ public class ResultsController implements Refreshable {
     @FXML
     void onSaveResults(ActionEvent event) {
         Race selectedRace = raceComboBox.getValue();
-        
+
         if (selectedRace == null) {
             showAlert("Error", "Please select a race first.");
             return;
         }
-        
+
         // Validate all drivers have positions and points
         boolean isValid = true;
         StringBuilder errorMessage = new StringBuilder("Please fix the following issues:\n");
-        
+
         for (Pilot driver : drivers) {
             int position = positionsMap.getOrDefault(driver, 0);
             int points = pointsMap.getOrDefault(driver, 0);
-            
+
             if (position <= 0) {
                 isValid = false;
                 errorMessage.append("- ").append(driver.getName()).append(" has an invalid position\n");
             }
-            
+
             if (points < 0) {
                 isValid = false;
                 errorMessage.append("- ").append(driver.getName()).append(" has negative points\n");
             }
         }
-        
+
         // Check for duplicate positions
         Map<Integer, List<Pilot>> positionGroups = drivers.stream()
                 .collect(Collectors.groupingBy(driver -> positionsMap.getOrDefault(driver, 0)));
-        
+
         for (Map.Entry<Integer, List<Pilot>> entry : positionGroups.entrySet()) {
             if (entry.getKey() > 0 && entry.getValue().size() > 1) {
                 isValid = false;
@@ -210,12 +208,12 @@ public class ResultsController implements Refreshable {
                         .append(" has multiple drivers assigned\n");
             }
         }
-        
+
         if (!isValid) {
             showAlert("Validation Error", errorMessage.toString());
             return;
         }
-        
+
         // Save results for each driver
         for (Pilot driver : drivers) {
             int position = positionsMap.get(driver);
@@ -227,14 +225,14 @@ public class ResultsController implements Refreshable {
                 bl.saveRaceResult(selectedRace, driver, position, points);
             }
         }
-        
+
         showAlert("Success", "Race results saved successfully!");
     }
-    
+
     private void updateSaveButtonState() {
         // Enable save button if we have valid data
         boolean hasValidData = false;
-        
+
         for (Pilot driver : drivers) {
             int position = positionsMap.getOrDefault(driver, 0);
             if (position > 0) {
@@ -242,10 +240,10 @@ public class ResultsController implements Refreshable {
                 break;
             }
         }
-        
+
         saveResultsButton.setDisable(!hasValidData);
     }
-    
+
     private void showAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -253,4 +251,4 @@ public class ResultsController implements Refreshable {
         alert.setContentText(message);
         alert.showAndWait();
     }
-} 
+}
