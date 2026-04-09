@@ -29,6 +29,7 @@ public class MainLayoutController {
 
     // Cache for loaded FXML content
     private final Map<String, AnchorPane> contentCache = new HashMap<>();
+    private final Map<String, Object> controllerCache = new HashMap<>();
     
     private BlInterface bl = new BusinessLogic();
 
@@ -72,6 +73,7 @@ public class MainLayoutController {
             
             // Clear the content cache so views will reload fresh data
             contentCache.clear();
+            controllerCache.clear();
             
             // Show success message
             Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
@@ -94,6 +96,13 @@ public class MainLayoutController {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
                 content = loader.load();
                 contentCache.put(fxmlFile, content);
+                controllerCache.put(fxmlFile, loader.getController());
+            } else {
+                // Refresh controller if it supports it
+                Object controller = controllerCache.get(fxmlFile);
+                if (controller instanceof Refreshable) {
+                    ((Refreshable) controller).refresh();
+                }
             }
             contentPane.setCenter(content);
         } catch (LoadException e) {

@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ResultsController {
+public class ResultsController implements Refreshable {
 
     @FXML
     private ComboBox<Race> raceComboBox;
@@ -116,6 +116,13 @@ public class ResultsController {
         
         // Set table items
         driversTable.setItems(drivers);
+    }
+
+    @Override
+    public void refresh() {
+        if (raceComboBox.getValue() != null) {
+            onLoadDrivers(null);
+        }
     }
 
     @FXML
